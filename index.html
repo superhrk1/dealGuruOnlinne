@@ -346,6 +346,7 @@
             <a href="#features">Features</a>
             <a href="#pricing">Pricing</a>
             <a href="#faq">FAQ</a>
+            <a href="#" onclick="openComplaintForm();return false;">📩 Contact / Complain</a>
           </div>
         </div>
         <div class="footer-bottom">
@@ -402,6 +403,12 @@
       <div class="success-emoji">🎉</div>
       <h2 class="success-title">Application Submitted!</h2>
       <p class="success-sub">Thank you for choosing <strong>DealGuru</strong>!</p>
+      <!-- Order Number Display -->
+      <div id="successOrderBox" class="success-order-box" style="display:none;">
+        <div class="success-order-label">🆔 Your Order ID</div>
+        <div class="success-order-number" id="successOrderNumber">DG-00000</div>
+        <div class="success-order-note">⚠️ Save this ID! You'll need it for any inquiries or complaints.</div>
+      </div>
       <div class="success-cred-box">
         <div class="success-cred-row"><span>📲</span><div><strong>Login Credentials Incoming</strong><p>After our team verifies your payment (within <strong style="color:#059669">24 hours</strong>), your DealGuru account will be created and login details will be sent to your <strong>WhatsApp</strong> and <strong>Email</strong>.</p></div></div>
       </div>
@@ -413,6 +420,57 @@
         <div class="tl-step"><span class="tl-icon">🚀</span><div><strong>Start closing deals!</strong><p>Log in and unlock your CRM</p></div></div>
       </div>
       <button class="btn-primary" onclick="closeSuccessModal()" style="width:100%;margin-top:24px;">← Back to DealGuru Home</button>
+    </div>
+  </div>
+
+  <!-- ─── COMPLAINT / CONTACT FORM MODAL ─── -->
+  <div id="complaintModal" class="wizard-overlay" style="display:none;">
+    <div class="complaint-container">
+      <button class="wizard-close" onclick="closeComplaintForm()">✕</button>
+
+      <!-- Form Content -->
+      <div id="complaintFormInner">
+        <div class="complaint-header">
+          <div class="complaint-emoji">📩</div>
+          <h2 class="complaint-title">Contact Us / File a Complaint</h2>
+          <p class="complaint-sub">Have a question about your order? Need help? We'll respond within 24 hours.</p>
+        </div>
+
+        <div id="complaintError" class="complaint-error" style="display:none;"></div>
+
+        <div class="complaint-form">
+          <label class="wiz-label">Order ID <span style="color:#64748B;font-weight:400;">(if you have one)</span></label>
+          <input class="wiz-input" id="complaintOrderId" placeholder="e.g. DG-00142" />
+
+          <label class="wiz-label">Your Name <span class="req">*</span></label>
+          <input class="wiz-input" id="complaintName" placeholder="Full name" />
+
+          <label class="wiz-label">Email</label>
+          <input class="wiz-input" id="complaintEmail" type="email" placeholder="your@email.com" />
+
+          <label class="wiz-label">WhatsApp Number</label>
+          <input class="wiz-input" id="complaintWhatsapp" placeholder="03XX-XXXXXXX" />
+          <div style="font-size:0.78rem;color:#64748B;margin-top:-12px;margin-bottom:12px;">Provide at least email or WhatsApp so we can respond.</div>
+
+          <label class="wiz-label">Subject <span class="req">*</span></label>
+          <input class="wiz-input" id="complaintSubject" placeholder="e.g. Payment not verified, Account issue..." />
+
+          <label class="wiz-label">Message <span class="req">*</span></label>
+          <textarea class="wiz-input" id="complaintMessage" rows="4" placeholder="Describe your issue in detail..."></textarea>
+
+          <button class="btn-cta-hero" id="complaintSubmitBtn" onclick="submitComplaint()" style="width:100%;margin-top:16px;">
+            <span class="cta-text">📨 Submit Complaint</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Success State -->
+      <div id="complaintSuccess" style="display:none;text-align:center;padding:40px 20px;">
+        <div style="font-size:3rem;margin-bottom:16px;">✅</div>
+        <h2 class="complaint-title">Complaint Submitted!</h2>
+        <p class="complaint-sub">We've received your message and will respond within <strong style="color:#34D399;">24 hours</strong> via WhatsApp or Email.</p>
+        <button class="btn-primary" onclick="closeComplaintSuccess()" style="width:100%;margin-top:24px;">← Back to DealGuru</button>
+      </div>
     </div>
   </div>
 

@@ -91,6 +91,8 @@ let wizState = {
   name: '', email: '', whatsapp: '', cnic: '', city: '', country: 'Pakistan', address: '',
   screenshot: null, screenshotFile: null, errors: {}, submitting: false,
 };
+let submittedOrderNumber = '';  // Stores order_number after successful submission
+let complaintSubmitting = false;
 
 // ─── Init ───────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
@@ -711,9 +713,17 @@ async function wizSubmit() {
       if(upErr) throw upErr;
       if(up){const{data:u}=sb.storage.from('payment-screenshots').getPublicUrl(fname);url=u?.publicUrl||'';}
     }
-    const {error}=await sb.from('payments').insert([{profile_id:null,package_id:pkg?.id||null,amount_pkr:pricing.final,status:'pending',payment_method:wizState.method,payment_method_detail:wizState.method,billing_period:wizState.period,screenshot_url:url,customer_name:wizState.name.trim(),customer_email:wizState.email.trim(),customer_whatsapp:wizState.whatsapp.trim(),customer_cnic:wizState.cnic.trim()||null}]);
+    const {data:insertedRows, error}=await sb.from('payments').insert([{profile_id:null,package_id:pkg?.id||null,amount_pkr:pricing.final,status:'pending',payment_method:wizState.method,payment_method_detail:wizState.method,billing_period:wizState.period,screenshot_url:url,customer_name:wizState.name.trim(),customer_email:wizState.email.trim(),customer_whatsapp:wizState.whatsapp.trim(),customer_cnic:wizState.cnic.trim()||null}]).select('order_number');
     if(error) throw error;
-    closeOrderWizard(); document.getElementById('successModal').style.display='flex';
+    // Store the order number for display
+    submittedOrderNumber = insertedRows?.[0]?.order_number || '';
+    closeOrderWizard();
+    // Update the success modal with order number
+    const orderNumEl = document.getElementById('successOrderNumber');
+    if (orderNumEl) orderNumEl.textContent = submittedOrderNumber || 'Processing...';
+    const orderNumBox = document.getElementById('successOrderBox');
+    if (orderNumBox) orderNumBox.style.display = submittedOrderNumber ? 'block' : 'none';
+    document.getElementById('successModal').style.display='flex';
   } catch(err) { alert('Submission failed: '+(err.message||'Unknown error')); }
   finally { wizState.submitting=false; renderWizardNav(); }
 }
@@ -733,3 +743,74 @@ function dataURLtoBlob(dataURL) {
   return new Blob([decodeURIComponent(parts[1])], { type: mime });
 }
 function closeSuccessModal() { document.getElementById('successModal').style.display='none'; }
+
+// ─── Complaint / Contact Form ───────────────────────────────────────────────
+function openComplaintForm() {
+  document.getElementById('complaintModal').style.display = 'flex';
+  // Pre-fill order number if available
+  const orderInput = document.getElementById('complaintOrderId');
+  if (orderInput && submittedOrderNumber) orderInput.value = submittedOrderNumber;
+}
+function closeComplaintForm() {
+  document.getElementById('complaintModal').style.display = 'none';
+}
+async function submitComplaint() {
+  if (complaintSubmitting) return;
+  const name = document.getElementById('complaintName')?.value?.trim() || '';
+  const email = document.getElementById('complaintEmail')?.value?.trim() || '';
+  const whatsapp = document.getElementById('complaintWhatsapp')?.value?.trim() || '';
+  const orderId = document.getElementById('complaintOrderId')?.value?.trim() || '';
+  const subject = document.getElementById('complaintSubject')?.value?.trim() || '';
+  const message = document.getElementById('complaintMessage')?.value?.trim() || '';
+
+  // Validation
+  const errEl = document.getElementById('complaintError');
+  if (!name || !message || !subject) {
+    errEl.textContent = '⚠ Name, subject, and message are required.';
+    errEl.style.display = 'block';
+    return;
+  }
+  if (!email && !whatsapp) {
+    errEl.textContent = '⚠ Please provide at least an email or WhatsApp number so we can respond.';
+    errEl.style.display = 'block';
+    return;
+  }
+  errEl.style.display = 'none';
+  complaintSubmitting = true;
+  const btn = document.getElementById('complaintSubmitBtn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Submitting...'; }
+
+  try {
+    const { error } = await sb.from('support_tickets').insert([{
+      profile_id: null,
+      subject: subject,
+      description: message,
+      priority: 'medium',
+      status: 'open',
+      guest_name: name,
+      guest_email: email || null,
+      guest_whatsapp: whatsapp || null,
+      guest_order_number: orderId || null
+    }]);
+    if (error) throw error;
+
+    // Show success state
+    document.getElementById('complaintFormInner').style.display = 'none';
+    document.getElementById('complaintSuccess').style.display = 'block';
+  } catch (err) {
+    errEl.textContent = '❌ Failed to submit: ' + (err.message || 'Unknown error');
+    errEl.style.display = 'block';
+  } finally {
+    complaintSubmitting = false;
+    if (btn) { btn.disabled = false; btn.textContent = '📨 Submit Complaint'; }
+  }
+}
+function closeComplaintSuccess() {
+  document.getElementById('complaintFormInner').style.display = 'block';
+  document.getElementById('complaintSuccess').style.display = 'none';
+  // Clear form
+  ['complaintName','complaintEmail','complaintWhatsapp','complaintOrderId','complaintSubject','complaintMessage'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  closeComplaintForm();
+}

@@ -1712,3 +1712,148 @@ img { max-width: 100%; display: block; }
   .countdown-strip { padding: 16px 20px; }
   .countdown-num { font-size: 1.6rem; width: 48px; height: 48px; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   SUCCESS MODAL
+   ═══════════════════════════════════════════════════════════════════ */
+.success-container {
+  background: linear-gradient(145deg, rgba(15, 20, 40, 0.98), rgba(10, 14, 26, 0.99));
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  border-radius: 20px;
+  max-width: 520px; width: 92%; margin: auto;
+  padding: 40px 32px; text-align: center;
+  position: relative;
+  backdrop-filter: blur(30px);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(99, 102, 241, 0.08);
+  animation: wizSlideUp 0.4s ease;
+}
+.success-emoji { font-size: 3.5rem; margin-bottom: 12px; }
+.success-title {
+  font-size: 1.6rem; font-weight: 800; color: #F8FAFC;
+  margin-bottom: 6px;
+}
+.success-sub {
+  font-size: 0.92rem; color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+
+/* ─── Order Number Box ─── */
+.success-order-box {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(139, 92, 246, 0.08));
+  border: 2px solid rgba(99, 102, 241, 0.4);
+  border-radius: 14px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  text-align: center;
+  animation: fadeInScale 0.5s ease 0.2s both;
+}
+.success-order-label {
+  font-size: 0.82rem; font-weight: 700; color: #818CF8;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  margin-bottom: 8px;
+}
+.success-order-number {
+  font-size: 2rem; font-weight: 900; color: #A5B4FC;
+  letter-spacing: 3px; font-family: 'Inter', monospace;
+  background: linear-gradient(135deg, #818CF8, #A78BFA, #C084FC);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 10px;
+}
+.success-order-note {
+  font-size: 0.78rem; color: #FBBF24;
+  line-height: 1.4;
+}
+@keyframes fadeInScale {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* ─── Credentials Box ─── */
+.success-cred-box {
+  background: rgba(16, 185, 129, 0.06);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 14px; padding: 18px 20px;
+  margin-bottom: 20px;
+}
+.success-cred-row {
+  display: flex; gap: 14px; align-items: flex-start; text-align: left;
+}
+.success-cred-row span { font-size: 1.4rem; flex-shrink: 0; margin-top: 2px; }
+.success-cred-row strong { color: #F8FAFC; font-size: 0.92rem; }
+.success-cred-row p { color: var(--text-secondary); font-size: 0.82rem; line-height: 1.5; margin-top: 4px; }
+
+/* ─── Timeline ─── */
+.success-timeline {
+  text-align: left; padding: 0 8px;
+}
+.tl-step {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding: 12px 0;
+  border-left: 2px solid rgba(255, 255, 255, 0.08);
+  margin-left: 14px; padding-left: 22px;
+  position: relative;
+  opacity: 0.5;
+}
+.tl-step.done { opacity: 1; border-left-color: #10B981; }
+.tl-step::before {
+  content: ''; position: absolute; left: -6px; top: 16px;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+}
+.tl-step.done::before {
+  background: #10B981;
+  border-color: #34D399;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+}
+.tl-icon { font-size: 1.1rem; flex-shrink: 0; }
+.tl-step strong { color: #F8FAFC; font-size: 0.85rem; }
+.tl-step p { color: var(--text-secondary); font-size: 0.78rem; margin-top: 2px; }
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   COMPLAINT / CONTACT FORM MODAL
+   ═══════════════════════════════════════════════════════════════════ */
+.complaint-container {
+  background: linear-gradient(145deg, rgba(15, 20, 40, 0.98), rgba(10, 14, 26, 0.99));
+  border: 1px solid rgba(99, 102, 241, 0.12);
+  border-radius: 20px;
+  max-width: 520px; width: 92%; margin: auto;
+  padding: 32px 28px; position: relative;
+  backdrop-filter: blur(30px);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(99, 102, 241, 0.06);
+  animation: wizSlideUp 0.4s ease;
+  max-height: 90vh; overflow-y: auto;
+}
+.complaint-header { text-align: center; margin-bottom: 20px; }
+.complaint-emoji { font-size: 2.5rem; margin-bottom: 10px; }
+.complaint-title {
+  font-size: 1.35rem; font-weight: 800; color: #F8FAFC;
+  margin-bottom: 6px;
+}
+.complaint-sub {
+  font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;
+}
+.complaint-form {
+  display: flex; flex-direction: column; gap: 4px;
+}
+.complaint-error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 10px;
+  padding: 12px 16px;
+  color: #FCA5A5;
+  font-size: 0.85rem; font-weight: 600;
+  margin-bottom: 12px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .success-container, .complaint-container {
+    padding: 28px 20px;
+    border-radius: 16px;
+  }
+  .success-order-number { font-size: 1.6rem; letter-spacing: 2px; }
+  .success-title, .complaint-title { font-size: 1.2rem; }
+}
