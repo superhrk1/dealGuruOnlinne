@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DealGuru — AI-Powered Real Estate CRM for Pakistani Brokers</title>
+  <meta name="description" content="Close more property deals with AI-powered matching, pipeline tracking, commission calculator and WhatsApp-linked CRM. Built for Pakistani real estate agents." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ─── NAVBAR ─── -->
+  <nav id="navbar">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo" onclick="showLanding()">
+        <div class="nav-logo-icon">D</div>
+        <div class="nav-logo-text">
+          <span class="nav-logo-name">DealGuru</span>
+          <span class="nav-logo-tag">Property Agent CRM</span>
+        </div>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div class="nav-right">
+        <a href="#" class="nav-login-btn" onclick="openOrderWizard('broker')">Login</a>
+        <button class="nav-cta" onclick="openOrderWizard('broker')">Start Free — 30 Days</button>
+      </div>
+      <button class="nav-mobile-toggle" id="mobileToggle" onclick="toggleMobileNav()">☰</button>
+    </div>
+  </nav>
+
+  <!-- ─── LANDING PAGE ─── -->
+  <main id="landingPage">
+
+    <!-- LIVE TICKER -->
+    <div class="ticker-bar">
+      <div class="ticker-dot"></div>
+      <span class="ticker-text" id="tickerText"></span>
+    </div>
+
+    <!-- ═══════ HERO ═══════ -->
+    <section class="hero">
+      <div class="hero-glow hero-glow-left"></div>
+      <div class="hero-glow hero-glow-right"></div>
+      <div class="hero-content">
+        <div class="urgency-badge">
+          <span class="urgency-dot">🔴</span>
+          <span>547 agents joined this month — 50% launch discount ending soon</span>
+        </div>
+        <h1>Built for Brokers Who Are<br><span class="red-text">Tired of Losing Deals<br>to Faster Agents.</span></h1>
+        <p class="hero-sub">While you search your WhatsApp, a DealGuru agent already called the client with 3 matching properties.<br><strong>All from your phone — even offline.</strong></p>
+        <div class="hero-actions">
+          <button class="btn-cta-hero pulse-anim" onclick="openOrderWizard('broker')">
+            <span class="cta-text">Start Free — 30 Days</span>
+            <span class="cta-subtext">30 days free • Then 50% OFF • No credit card</span>
+          </button>
+        </div>
+        <!-- Social Proof -->
+        <div class="social-proof">
+          <div class="avatar-stack">
+            <div class="stacked-avatar" style="background:linear-gradient(135deg,#6366F1,#6366F188);">HR</div>
+            <div class="stacked-avatar" style="background:linear-gradient(135deg,#A855F7,#A855F788);">ZM</div>
+            <div class="stacked-avatar" style="background:linear-gradient(135deg,#EC4899,#EC489988);">KB</div>
+            <div class="stacked-avatar" style="background:linear-gradient(135deg,#F59E0B,#F59E0B88);">AS</div>
+            <div class="stacked-avatar" style="background:linear-gradient(135deg,#10B981,#10B98188);">UF</div>
+          </div>
+          <div class="social-proof-text">
+            <div class="stars-row">★★★★★ <span class="rating-val">4.9/5</span></div>
+            <div>Trusted by <strong>500+ agents</strong> across Pakistan</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════ PAIN SECTION ═══════ -->
+    <section class="pain-section">
+      <div class="section-inner">
+        <div class="section-label">DOES THIS SOUND FAMILIAR?</div>
+        <h2 class="pain-title">The Expensive Mistakes<br><span class="red-text">Every Agent Makes</span></h2>
+        <p class="pain-subtitle">Until they switch to DealGuru</p>
+        <div class="pain-grid" id="painGrid"></div>
+        <div class="pain-total">
+          <div class="pain-total-label">Estimated commission lost per month without a CRM:</div>
+          <div class="pain-total-amount">PKR 16,70,000+</div>
+          <div class="pain-total-sub">DealGuru costs PKR 1,500/month (50% launch price). You do the math.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════ STATS RIBBON ═══════ -->
+    <section class="stats-ribbon">
+      <div class="stat"><span class="stat-val" data-count="547">0</span><span class="stat-suffix">+</span><span class="stat-label">Active Agents</span></div>
+      <div class="stat-divider"></div>
+      <div class="stat"><span class="stat-val">PKR 12B+</span><span class="stat-label">Deal Volume Tracked</span></div>
+      <div class="stat-divider"></div>
+      <div class="stat"><span class="stat-val">0.3s</span><span class="stat-label">Average Search Time</span></div>
+      <div class="stat-divider"></div>
+      <div class="stat"><span class="stat-val">96%</span><span class="stat-label">Match Accuracy</span></div>
+    </section>
+
+    <!-- ═══════ FEATURES — WITHOUT vs WITH ═══════ -->
+    <section id="features" class="section features-section">
+      <div class="section-inner">
+        <div class="section-label">THE UNFAIR ADVANTAGE</div>
+        <h2 class="section-title">Before vs After DealGuru</h2>
+        <p class="section-sub">See what changes when you go digital.</p>
+        <div class="feature-grid" id="featureGrid"></div>
+      </div>
+    </section>
+
+    <!-- ═══════ INTERACTIVE SHOWCASE ═══════ -->
+    <section class="section showcase-section">
+      <div class="section-inner">
+        <div class="section-label">SEE IT WORK</div>
+        <h2 class="section-title">60 Seconds That Will Change How You Sell Property</h2>
+        <div class="showcase-tabs">
+          <button class="showcase-tab active" data-tab="matching" onclick="switchTab('matching')">🧠 Smart Match</button>
+          <button class="showcase-tab" data-tab="pipeline" onclick="switchTab('pipeline')">📊 Pipeline</button>
+          <button class="showcase-tab" data-tab="commission" onclick="switchTab('commission')">💰 Commission</button>
+        </div>
+        <div class="showcase-preview" id="showcasePreview"></div>
+      </div>
+    </section>
+
+    <!-- ═══════ IDENTITY SECTION ═══════ -->
+    <section class="section identity-section">
+      <div class="section-inner">
+        <div class="identity-box">
+          <h2 class="identity-title">In 2026, There Are Two Kinds of Brokers.</h2>
+          <p class="identity-subtitle">One uses a notebook. One uses DealGuru. Guess who closes more.</p>
+          <div class="identity-compare">
+            <div class="identity-old">
+              <div class="identity-col-title">The Notebook Agent</div>
+              <div class="identity-emoji">📓</div>
+              <div class="identity-item bad">✗ Searches properties by memory</div>
+              <div class="identity-item bad">✗ Forgets client requirements</div>
+              <div class="identity-item bad">✗ Calculates commission on paper</div>
+              <div class="identity-item bad">✗ Loses data when phone breaks</div>
+              <div class="identity-item bad">✗ Cannot work without internet</div>
+              <div class="identity-item bad">✗ Loses 3-5 deals/month from disorganization</div>
+            </div>
+            <div class="identity-vs">VS</div>
+            <div class="identity-new">
+              <div class="identity-col-title identity-new-title">The DealGuru Agent</div>
+              <div class="identity-emoji">🚀</div>
+              <div class="identity-item good">✓ AI matches properties in 0.3 seconds</div>
+              <div class="identity-item good">✓ Never forgets — system tracks everything</div>
+              <div class="identity-item good">✓ Exact commission before deal closes</div>
+              <div class="identity-item good">✓ Data synced and backed up in cloud</div>
+              <div class="identity-item good">✓ Full access even with zero signal</div>
+              <div class="identity-item good">✓ Closes 3.5x more deals per month</div>
+            </div>
+          </div>
+          <div class="identity-question">Which one are you?</div>
+          <button class="btn-cta-hero" onclick="openOrderWizard('broker')" style="margin:0 auto;display:block;">Become a DealGuru Agent →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════ TESTIMONIALS ═══════ -->
+    <section class="section testimonials-section">
+      <div class="section-inner">
+        <div class="section-label">REAL AGENTS, REAL RESULTS</div>
+        <h2 class="section-title">Don't Take Our Word For It. Take Theirs.</h2>
+        <div class="testimonials-grid" id="testimonialsGrid"></div>
+      </div>
+    </section>
+
+    <!-- ═══════ PRICING ═══════ -->
+    <section id="pricing" class="section pricing-section">
+      <div class="section-inner">
+        <div class="section-label">INVEST IN YOUR CAREER</div>
+        <h2 class="section-title">One Deal Pays for 4 Years of DealGuru.</h2>
+        <p class="section-sub">30-day free trial. Then 50% off for 6 months.<br>No risk. No commitment. Just results.</p>
+        <!-- Discount Banner -->
+        <div class="discount-banner">
+          <span class="discount-banner-emoji">🎉</span>
+          <div>
+            <div class="discount-banner-title">LAUNCH OFFER: 30 Days FREE → Then 50% OFF</div>
+            <div class="discount-banner-sub">Only 453 spots left at this price. After 1,000 agents, full price applies.</div>
+          </div>
+        </div>
+        <div class="pricing-toggle">
+          <button class="toggle-btn active" id="toggleMonthly" onclick="setPricingPeriod('monthly')">Monthly</button>
+          <button class="toggle-btn" id="toggleYearly" onclick="setPricingPeriod('yearly')">
+            Yearly <span class="save-badge" id="saveBadge"></span>
+          </button>
+        </div>
+        <div class="pricing-grid" id="pricingGrid"></div>
+        <p class="pricing-guarantee">🛡️ 30-Day Free Trial + 50% OFF for 6 months — If DealGuru doesn't pay for itself with your very first deal, we will refund every rupee. No questions. No hassle.</p>
+      </div>
+    </section>
+
+    <!-- ═══════ FAQ ═══════ -->
+    <section id="faq" class="section faq-section">
+      <div class="section-inner">
+        <div class="section-label">STILL THINKING?</div>
+        <h2 class="section-title">We Know You're Thinking...</h2>
+        <div class="faq-list" id="faqList"></div>
+      </div>
+    </section>
+
+    <!-- ═══════ FINAL CTA ═══════ -->
+    <section class="section final-cta-section">
+      <div class="section-inner">
+        <div class="final-cta-box">
+          <div class="final-cta-emoji">🚀</div>
+          <h2 class="final-cta-title">30 Days Free. 50% Off After.<br>Zero Risk. What Are You Waiting For?</h2>
+          <p class="final-cta-sub">Every feature. Every tool. Completely free for 30 days.<br>Then 50% off for your first 6 months. One deal covers 4 years of DealGuru.</p>
+          <p class="final-cta-urgency">50% launch discount disappears when we hit 1,000 agents. Only 453 spots left.</p>
+          <button class="btn-cta-hero" onclick="openOrderWizard('broker')" style="margin:0 auto;">
+            <span class="cta-text">Start 30-Day Free Trial →</span>
+            <span class="cta-subtext">No credit card. Setup in 60 seconds. Cancel anytime.</span>
+          </button>
+          <p class="final-cta-risk">🛡️ No credit card required • Cancel anytime • Your data stays yours</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="footer-inner">
+        <div class="footer-top">
+          <div class="footer-brand">
+            <div class="nav-logo-icon">D</div>
+            <div>
+              <div style="font-weight:800;font-size:1.1rem;">DealGuru</div>
+              <div style="font-size:0.8rem;color:#64748B;">Pakistan's #1 Real Estate CRM</div>
+            </div>
+          </div>
+          <div class="footer-links">
+            <a href="#features">Features</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#faq">FAQ</a>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>© 2025 DealGuru. Built with ❤️ for Pakistani real estate professionals.</p>
+          <p style="font-size:0.75rem;color:#475569;margin-top:4px;">All payments verified manually. No automated billing.</p>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- ─── ORDER WIZARD ─── -->
+  <div id="orderWizard" class="wizard-overlay" style="display:none;">
+    <div class="wizard-container">
+      <button class="wizard-close" onclick="closeOrderWizard()">✕</button>
+      <div class="wizard-stepper" id="wizardStepper"></div>
+      <div class="wizard-body" id="wizardBody"></div>
+      <div class="wizard-nav" id="wizardNav"></div>
+    </div>
+  </div>
+
+  <!-- ─── SUCCESS MODAL ─── -->
+  <div id="successModal" class="wizard-overlay" style="display:none;">
+    <div class="success-container">
+      <div class="success-emoji">🎉</div>
+      <h2 class="success-title">Application Submitted!</h2>
+      <p class="success-sub">Thank you for choosing <strong>DealGuru</strong>!</p>
+      <div class="success-cred-box">
+        <div class="success-cred-row"><span>📲</span><div><strong>Login Credentials Incoming</strong><p>After our team verifies your payment (within <strong style="color:#059669">24 hours</strong>), your DealGuru account will be created and login details will be sent to your <strong>WhatsApp</strong> and <strong>Email</strong>.</p></div></div>
+      </div>
+      <div class="success-timeline">
+        <div class="tl-step done"><span class="tl-icon">📸</span><div><strong>Screenshot received</strong><p>We got your payment proof</p></div></div>
+        <div class="tl-step"><span class="tl-icon">🔍</span><div><strong>Admin verification</strong><p>Our team reviews within 24 hours</p></div></div>
+        <div class="tl-step"><span class="tl-icon">🔑</span><div><strong>Account created</strong><p>Your DealGuru login is set up</p></div></div>
+        <div class="tl-step"><span class="tl-icon">📲</span><div><strong>Credentials sent</strong><p>WhatsApp + Email notification</p></div></div>
+        <div class="tl-step"><span class="tl-icon">🚀</span><div><strong>Start closing deals!</strong><p>Log in and unlock your CRM</p></div></div>
+      </div>
+      <button class="btn-primary" onclick="closeSuccessModal()" style="width:100%;margin-top:24px;">← Back to DealGuru Home</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

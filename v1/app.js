@@ -64,27 +64,11 @@ const FAQ_DATA = [
   { q: 'Is it really free for 30 days? What is the catch?', a: "No catch. Full access to every feature for 30 days. No credit card required. After that, you get 50% off for your first 6 months. We do this because we know that once you use the matching engine to close one deal, the app pays for itself 10x over." },
 ];
 
-// ─── Dark Psychology: Activity Feed Data ─────────────────────────────────────
-const ACTIVITY_FEED = [
-  { name: 'Usman A.', city: 'Lahore', action: 'just ordered Solo Broker plan', time: '2 min ago', initials: 'UA' },
-  { name: 'Fatima K.', city: 'Karachi', action: 'closed a PKR 4.2 Cr deal using DealGuru', time: '5 min ago', initials: 'FK' },
-  { name: 'Ali H.', city: 'Islamabad', action: 'matched 5 properties in 0.3 seconds', time: '8 min ago', initials: 'AH' },
-  { name: 'Sara M.', city: 'Lahore', action: 'just started her 30-day free trial', time: '11 min ago', initials: 'SM' },
-  { name: 'Bilal R.', city: 'Faisalabad', action: 'upgraded to Agency Admin plan', time: '14 min ago', initials: 'BR' },
-  { name: 'Ayesha G.', city: 'Rawalpindi', action: 'closed 3 deals this week with DealGuru', time: '18 min ago', initials: 'AG' },
-  { name: 'Kamran S.', city: 'Multan', action: 'just ordered Solo Broker plan', time: '22 min ago', initials: 'KS' },
-  { name: 'Nadia P.', city: 'Peshawar', action: 'earned PKR 3.5 Lac commission today', time: '25 min ago', initials: 'NP' },
-  { name: 'Zain Q.', city: 'Sialkot', action: 'just started his 30-day free trial', time: '29 min ago', initials: 'ZQ' },
-  { name: 'Hira B.', city: 'Gujranwala', action: 'matched buyer to perfect property in 0.2s', time: '33 min ago', initials: 'HB' },
-];
-
 // ─── State ──────────────────────────────────────────────────────────────────
 let dbPackages = [];
 let paymentConfig = null;
 let pricingPeriod = 'yearly';
 let activeShowcaseTab = 'matching';
-let exitPopupShown = false;
-let toastIndex = 0;
 
 let wizState = {
   planKey: 'broker', step: 0, period: 'monthly', method: 'jazzcash',
@@ -100,14 +84,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   initShowcase();
   initTestimonials();
   initFAQ();
-  initScrollReveal();
-  initScrollProgress();
-  initNavScroll();
-  initCountdown();
-  initParticles();
-  initActivityToast();
-  initExitIntent();
-  initStickyCta();
   await fetchPackages();
   await fetchPaymentConfig();
   renderPricing();
@@ -152,238 +128,11 @@ function calcPricing(key, period) {
   return { original: Math.round(orig), final: Math.round(fin), savings: sv, discountPct: pct, yearlyDiscountPct: yearlyPct, hasDiscount: sv > 0, perMonth: pm, trialDays, dailyCost: Math.round(pm / 30), promoActive: promoPct > 0, promoPct };
 }
 
-// ─── Scroll Reveal (Intersection Observer) ──────────────────────────────────
-function initScrollReveal() {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('revealed');
-      }
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-
-  document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale').forEach(el => {
-    observer.observe(el);
-  });
-}
-
-// ─── Scroll Progress Bar ────────────────────────────────────────────────────
-function initScrollProgress() {
-  const bar = document.getElementById('scrollProgress');
-  window.addEventListener('scroll', () => {
-    const scrollTop = window.scrollY;
-    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-    const percent = (scrollTop / docHeight) * 100;
-    bar.style.width = percent + '%';
-  });
-}
-
-// ─── Navbar Scroll Behavior ─────────────────────────────────────────────────
-function initNavScroll() {
-  const nav = document.getElementById('navbar');
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 50) {
-      nav.classList.add('scrolled');
-    } else {
-      nav.classList.remove('scrolled');
-    }
-  });
-}
-
-// ─── Countdown Timer (Dark Psychology: Urgency) ─────────────────────────────
-function initCountdown() {
-  // Set deadline to 3 days from now (resets each visit — urgency illusion)
-  const stored = localStorage.getItem('dg_countdown_end');
-  let endTime;
-  if (stored && Number(stored) > Date.now()) {
-    endTime = Number(stored);
-  } else {
-    endTime = Date.now() + (3 * 24 * 60 * 60 * 1000); // 3 days
-    localStorage.setItem('dg_countdown_end', endTime);
-  }
-
-  function updateCountdown() {
-    const now = Date.now();
-    const diff = Math.max(0, endTime - now);
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const secs = Math.floor((diff % (1000 * 60)) / 1000);
-
-    const pad = n => String(n).padStart(2, '0');
-    // Hero countdown
-    const cdDays = document.getElementById('cdDays');
-    const cdHours = document.getElementById('cdHours');
-    const cdMins = document.getElementById('cdMins');
-    const cdSecs = document.getElementById('cdSecs');
-    if (cdDays) cdDays.textContent = pad(days);
-    if (cdHours) cdHours.textContent = pad(hours);
-    if (cdMins) cdMins.textContent = pad(mins);
-    if (cdSecs) cdSecs.textContent = pad(secs);
-    // Final CTA countdown
-    const cdDays2 = document.getElementById('cdDays2');
-    const cdHours2 = document.getElementById('cdHours2');
-    const cdMins2 = document.getElementById('cdMins2');
-    const cdSecs2 = document.getElementById('cdSecs2');
-    if (cdDays2) cdDays2.textContent = pad(days);
-    if (cdHours2) cdHours2.textContent = pad(hours);
-    if (cdMins2) cdMins2.textContent = pad(mins);
-    if (cdSecs2) cdSecs2.textContent = pad(secs);
-  }
-  updateCountdown();
-  setInterval(updateCountdown, 1000);
-}
-
-// ─── Particle Canvas Background ─────────────────────────────────────────────
-function initParticles() {
-  const canvas = document.getElementById('particleCanvas');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  let particles = [];
-  const PARTICLE_COUNT = 50;
-
-  function resize() {
-    canvas.width = canvas.parentElement.offsetWidth;
-    canvas.height = canvas.parentElement.offsetHeight;
-  }
-  resize();
-  window.addEventListener('resize', resize);
-
-  for (let i = 0; i < PARTICLE_COUNT; i++) {
-    particles.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      vx: (Math.random() - 0.5) * 0.3,
-      vy: (Math.random() - 0.5) * 0.3,
-      r: Math.random() * 2 + 0.5,
-      alpha: Math.random() * 0.3 + 0.1,
-    });
-  }
-
-  function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    particles.forEach(p => {
-      p.x += p.vx; p.y += p.vy;
-      if (p.x < 0) p.x = canvas.width;
-      if (p.x > canvas.width) p.x = 0;
-      if (p.y < 0) p.y = canvas.height;
-      if (p.y > canvas.height) p.y = 0;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(129, 140, 248, ${p.alpha})`;
-      ctx.fill();
-    });
-
-    // Draw connections
-    for (let i = 0; i < particles.length; i++) {
-      for (let j = i + 1; j < particles.length; j++) {
-        const dx = particles[i].x - particles[j].x;
-        const dy = particles[i].y - particles[j].y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 120) {
-          ctx.beginPath();
-          ctx.moveTo(particles[i].x, particles[i].y);
-          ctx.lineTo(particles[j].x, particles[j].y);
-          ctx.strokeStyle = `rgba(129, 140, 248, ${0.06 * (1 - dist / 120)})`;
-          ctx.lineWidth = 0.5;
-          ctx.stroke();
-        }
-      }
-    }
-    requestAnimationFrame(animate);
-  }
-  animate();
-}
-
-// ─── Activity Toast Notifications (Dark Psychology: FOMO) ───────────────────
-function initActivityToast() {
-  // Show first toast after 8 seconds, then every 15-25 seconds
-  setTimeout(showNextToast, 8000);
-}
-
-function showNextToast() {
-  const activity = ACTIVITY_FEED[toastIndex % ACTIVITY_FEED.length];
-  const toast = document.getElementById('activityToast');
-  const avatar = document.getElementById('toastAvatar');
-  const message = document.getElementById('toastMessage');
-  const time = document.getElementById('toastTime');
-
-  avatar.textContent = activity.initials;
-  message.innerHTML = `<strong>${activity.name}</strong> from ${activity.city} ${activity.action}`;
-  time.textContent = activity.time;
-
-  toast.style.display = 'flex';
-  toast.classList.remove('toast-exit');
-  toast.classList.add('toast-enter');
-
-  toastIndex++;
-
-  // Auto-hide after 5 seconds
-  setTimeout(() => {
-    toast.classList.remove('toast-enter');
-    toast.classList.add('toast-exit');
-    setTimeout(() => { toast.style.display = 'none'; }, 400);
-  }, 5000);
-
-  // Schedule next toast
-  const delay = 15000 + Math.random() * 10000; // 15-25 seconds
-  setTimeout(showNextToast, delay);
-}
-
-function hideToast() {
-  const toast = document.getElementById('activityToast');
-  toast.classList.remove('toast-enter');
-  toast.classList.add('toast-exit');
-  setTimeout(() => { toast.style.display = 'none'; }, 400);
-}
-
-// ─── Exit Intent Popup (Dark Psychology: Loss Aversion) ─────────────────────
-function initExitIntent() {
-  document.addEventListener('mouseout', (e) => {
-    if (e.clientY < 5 && !exitPopupShown) {
-      exitPopupShown = true;
-      document.getElementById('exitPopup').style.display = 'flex';
-    }
-  });
-
-  // For mobile: trigger on back button / scroll up fast
-  let lastScrollY = 0;
-  let scrollUpCount = 0;
-  window.addEventListener('scroll', () => {
-    if (window.scrollY < lastScrollY - 100) {
-      scrollUpCount++;
-      if (scrollUpCount > 3 && !exitPopupShown && window.scrollY > 500) {
-        exitPopupShown = true;
-        document.getElementById('exitPopup').style.display = 'flex';
-      }
-    } else {
-      scrollUpCount = 0;
-    }
-    lastScrollY = window.scrollY;
-  });
-}
-
-function closeExitPopup() {
-  document.getElementById('exitPopup').style.display = 'none';
-}
-
-// ─── Sticky Bottom CTA (Dark Psychology: Constant Conversion Pressure) ──────
-function initStickyCta() {
-  const stickyCta = document.getElementById('stickyCta');
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 800) {
-      stickyCta.style.display = 'block';
-    } else {
-      stickyCta.style.display = 'none';
-    }
-  });
-}
-
 // ─── Pain Points ────────────────────────────────────────────────────────────
 function initPainPoints() {
   const g = document.getElementById('painGrid');
   g.innerHTML = PAIN_POINTS.map(p => `
-    <div class="pain-card reveal">
+    <div class="pain-card">
       <div class="pain-emoji">${p.icon}</div>
       <div class="pain-desc">${p.pain}</div>
       <div class="pain-arrow">↓ What happened</div>
@@ -397,9 +146,9 @@ function initPainPoints() {
 function initFeatures() {
   const g = document.getElementById('featureGrid');
   g.innerHTML = FEATURES.map(f => `
-    <div class="feature-card reveal">
+    <div class="feature-card">
       <div class="feature-card-header">
-        <div class="feature-icon-box" style="background:${f.color}12;border-color:${f.color}25;"><span>${f.icon}</span></div>
+        <div class="feature-icon-box" style="background:${f.color}18;border-color:${f.color}30;"><span>${f.icon}</span></div>
         <div class="feature-card-title">${f.title}</div>
       </div>
       <div class="feature-without-box">
@@ -473,7 +222,7 @@ function initShowcase() {
           <div>
             <div class="pipeline-col-header" style="border-bottom-color:${c.color};">
               <span>${c.emoji} ${c.stage}</span>
-              <span class="pipeline-count-badge" style="background:${c.color}20;color:${c.color};">${c.count}</span>
+              <span class="pipeline-count-badge" style="background:${c.color}25;color:${c.color};">${c.count}</span>
             </div>
             <div class="mock-deal-card" style="border-left-color:${c.color};">
               <div class="mock-deal-client">${c.client}</div>
@@ -515,7 +264,7 @@ function initTestimonials() {
   g.innerHTML = TESTIMONIALS.map(t => {
     const initials = t.name.split(' ').map(n => n[0]).join('');
     return `
-      <div class="testimonial-card reveal">
+      <div class="testimonial-card">
         <div class="stars-row">★★★★★</div>
         <div class="quote-text">"${t.quote}"</div>
         <div class="testimonial-result-badge"><span class="emoji">${t.emoji}</span><span class="result-text">${t.result}</span></div>
@@ -536,8 +285,6 @@ function initTicker() {
     '🚀 New agent from Islamabad joined DealGuru — 8 min ago',
     '💰 Commission of PKR 4.2 Lac auto-calculated — 12 min ago',
     '⚡ Agent found perfect match in 0.3 seconds — 15 min ago',
-    '🔥 3 new agents signed up in the last hour',
-    '📊 Agent in Karachi tracked 12 deals in pipeline today',
   ];
   let idx = 0; const el = document.getElementById('tickerText');
   el.textContent = items[0];
@@ -548,7 +295,7 @@ function initTicker() {
 function initFAQ() {
   const list = document.getElementById('faqList');
   list.innerHTML = FAQ_DATA.map((item, i) => `
-    <div class="faq-item reveal" id="faqItem${i}">
+    <div class="faq-item" id="faqItem${i}">
       <button class="faq-q" onclick="toggleFaq(${i})">${item.q}<span class="faq-toggle">+</span></button>
       <div class="faq-a" id="faqA${i}">${item.a}</div>
     </div>
@@ -577,14 +324,14 @@ function renderPricing() {
   const soloPkg = getDbPkg('broker'); const agencyPkg = getDbPkg('agency_admin');
 
   // Update save badge
-  const saveBadgeEl = document.getElementById('saveBadge');
-  if (solo.yearlyDiscountPct > 0) { saveBadgeEl.textContent = `Save ${solo.yearlyDiscountPct}%`; saveBadgeEl.style.display = 'inline-block'; }
-  else { saveBadgeEl.style.display = 'none'; }
+  const sb = document.getElementById('saveBadge');
+  if (solo.yearlyDiscountPct > 0) { sb.textContent = `Save ${solo.yearlyDiscountPct}%`; sb.style.display = 'inline-block'; }
+  else { sb.style.display = 'none'; }
 
   const grid = document.getElementById('pricingGrid');
   grid.innerHTML = `
     <!-- Solo Broker -->
-    <div class="price-card reveal">
+    <div class="price-card">
       <div>
         ${solo.promoActive ? `<span class="discount-badge">🔥 ${solo.promoPct}% OFF</span>` : ''}
         ${solo.trialDays > 0 ? `<span class="trial-badge">🎁 ${solo.trialDays}-Day Free Trial</span>` : ''}
@@ -592,7 +339,7 @@ function renderPricing() {
       <div class="price-name">${soloPkg?.name || 'Solo Broker'}</div>
       ${solo.hasDiscount ? `<div class="price-original-row"><span class="price-original">PKR ${solo.original.toLocaleString()}</span>${solo.promoActive ? `<span class="discount-chip">${solo.promoPct}% OFF</span>` : ''}${pricingPeriod === 'yearly' && solo.yearlyDiscountPct > 0 ? `<span class="discount-chip" style="margin-left:4px;">+${solo.yearlyDiscountPct}% YEARLY</span>` : ''}</div>` : ''}
       <div class="price-amount"><span class="currency">PKR</span>${solo.final.toLocaleString()}<span class="period">/${pricingPeriod === 'yearly' ? 'yr' : 'mo'}</span></div>
-      <div class="pricing-roi">= PKR ${solo.dailyCost.toLocaleString()}/day — less than a chai ☕</div>
+      <div class="pricing-roi">= PKR ${solo.dailyCost.toLocaleString()}/day — less than a chai</div>
       ${solo.trialDays > 0 ? `<div class="pricing-trial-note">First ${solo.trialDays} days completely FREE</div>` : ''}
       <ul class="price-features">
         ${(soloPkg?.features || PLANS.broker.features).map(f => `<li><span class="check">✓</span>${f}</li>`).join('')}
@@ -601,14 +348,14 @@ function renderPricing() {
     </div>
 
     <!-- Agency Admin -->
-    <div class="price-card popular reveal">
+    <div class="price-card popular">
       <div class="popular-badge">BEST VALUE</div>
       <div>
         ${agency.promoActive ? `<span class="discount-badge" style="background:linear-gradient(135deg,#A855F7,#6366F1);">🔥 ${agency.promoPct}% OFF</span>` : ''}
         ${agency.trialDays > 0 ? `<span class="trial-badge">🎁 ${agency.trialDays}-Day Free Trial</span>` : ''}
       </div>
       <div class="price-name" style="color:#A78BFA;">${agencyPkg?.name || 'Agency Admin'}</div>
-      ${agency.hasDiscount ? `<div class="price-original-row"><span class="price-original">PKR ${agency.original.toLocaleString()}</span>${agency.promoActive ? `<span class="discount-chip" style="background:rgba(168,85,247,0.12);color:#A78BFA;">${agency.promoPct}% OFF</span>` : ''}${pricingPeriod === 'yearly' && agency.yearlyDiscountPct > 0 ? `<span class="discount-chip" style="background:rgba(168,85,247,0.12);color:#A78BFA;margin-left:4px;">+${agency.yearlyDiscountPct}% YEARLY</span>` : ''}</div>` : ''}
+      ${agency.hasDiscount ? `<div class="price-original-row"><span class="price-original">PKR ${agency.original.toLocaleString()}</span>${agency.promoActive ? `<span class="discount-chip" style="background:rgba(168,85,247,0.15);color:#A78BFA;">${agency.promoPct}% OFF</span>` : ''}${pricingPeriod === 'yearly' && agency.yearlyDiscountPct > 0 ? `<span class="discount-chip" style="background:rgba(168,85,247,0.15);color:#A78BFA;margin-left:4px;">+${agency.yearlyDiscountPct}% YEARLY</span>` : ''}</div>` : ''}
       <div class="price-amount"><span class="currency">PKR</span>${agency.final.toLocaleString()}<span class="period">/${pricingPeriod === 'yearly' ? 'yr' : 'mo'}</span></div>
       <div class="pricing-roi">= PKR ${Math.round(agency.perMonth / 10).toLocaleString()}/agent/mo for a 10-agent team</div>
       ${agency.trialDays > 0 ? `<div class="pricing-trial-note">First ${agency.trialDays} days completely FREE</div>` : ''}
@@ -619,7 +366,7 @@ function renderPricing() {
     </div>
 
     <!-- Enterprise -->
-    <div class="price-card reveal">
+    <div class="price-card">
       <div class="price-name">Enterprise</div>
       <div class="price-amount">Custom</div>
       <div class="pricing-roi">For large brokerages with 20+ agents</div>
@@ -629,9 +376,6 @@ function renderPricing() {
       <button class="pricing-btn outline" onclick="window.open('https://wa.me/923000000000?text=${encodeURIComponent("Hello DealGuru Team! I am interested in the Enterprise Plan.")}','_blank')">💬 Contact Our Team</button>
     </div>
   `;
-
-  // Re-observe new reveal elements
-  initScrollReveal();
 }
 
 // ─── Nav Helpers ─────────────────────────────────────────────────────────────
@@ -667,7 +411,7 @@ function renderStep0() {
 
 function renderStep1() { const e = wizState.errors; return `<h3 class="wiz-heading">Your Details</h3><p class="wiz-sub">We use this info to verify your identity and notify you via WhatsApp after approval.</p><div><label class="wiz-label">Full Name <span class="req">*</span></label><input class="wiz-input ${e.name?'error':''}" value="${esc(wizState.name)}" placeholder="e.g. Ali Hassan Khan" oninput="wizState.name=this.value" />${e.name?`<div class="wiz-error">⚠ ${e.name}</div>`:''}<label class="wiz-label">Email Address <span class="req">*</span></label><input class="wiz-input ${e.email?'error':''}" type="email" value="${esc(wizState.email)}" placeholder="your@email.com" oninput="wizState.email=this.value" />${e.email?`<div class="wiz-error">⚠ ${e.email}</div>`:''}<label class="wiz-label">WhatsApp Number <span class="req">*</span></label><input class="wiz-input ${e.whatsapp?'error':''}" value="${esc(wizState.whatsapp)}" placeholder="03XX-XXXXXXX" oninput="wizState.whatsapp=this.value" />${e.whatsapp?`<div class="wiz-error">⚠ ${e.whatsapp}</div>`:''}<label class="wiz-label">CNIC</label><input class="wiz-input" value="${esc(wizState.cnic)}" placeholder="00000-0000000-0" oninput="wizState.cnic=this.value" /><div style="font-size:0.78rem;color:#64748B;margin-top:-12px;margin-bottom:12px;">Recommended for identity verification</div><label class="wiz-label">City <span class="req">*</span></label><input class="wiz-input ${e.city?'error':''}" value="${esc(wizState.city)}" placeholder="e.g. Lahore, Karachi" oninput="wizState.city=this.value" />${e.city?`<div class="wiz-error">⚠ ${e.city}</div>`:''}<label class="wiz-label">Country <span class="req">*</span></label><div class="wiz-country-row">${COUNTRIES.map(c=>`<button class="wiz-country-chip ${wizState.country===c?'active':''}" onclick="wizState.country='${c}';renderWizard()">${c}</button>`).join('')}</div><label class="wiz-label">Full Address <span class="req">*</span></label><textarea class="wiz-input ${e.address?'error':''}" rows="2" placeholder="Street, Area, City" oninput="wizState.address=this.value">${esc(wizState.address)}</textarea>${e.address?`<div class="wiz-error">⚠ ${e.address}</div>`:''}</div><div style="text-align:center;margin-top:8px;font-size:0.82rem;color:#64748B;">🔒 Stored securely · used only for verification & support</div>`; }
 
-function renderStep2() { const pricing = calcPricing(wizState.planKey, wizState.period); const cfg = paymentConfig || {}; const m = wizState.method; let acct = ''; if (m==='jazzcash') { acct = `<div class="wiz-account-header"><span class="icon">📱</span><span class="title">JazzCash Instructions</span></div><div class="wiz-account-instr">Open JazzCash → Send Money → enter number → transfer PKR ${pricing.final.toLocaleString()}</div>${accountRow('Mobile Number',cfg.jazzcash_number,'jc_num')}${accountRow('Account Name',cfg.jazzcash_name,'jc_name')}`; } else if (m==='easypaysa') { acct = `<div class="wiz-account-header"><span class="icon">💚</span><span class="title">EasyPaisa Instructions</span></div><div class="wiz-account-instr">Open EasyPaisa → Send Money → enter number → transfer PKR ${pricing.final.toLocaleString()}</div>${accountRow('Mobile Number',cfg.easypaysa_number,'ep_num')}${accountRow('Account Name',cfg.easypaysa_name,'ep_name')}`; } else { acct = `<div class="wiz-account-header"><span class="icon">🏦</span><span class="title">Bank Transfer Instructions</span></div><div class="wiz-account-instr">Transfer PKR ${pricing.final.toLocaleString()} to the account below.</div>${accountRow('Bank',cfg.bank_name,'bk_name')}${accountRow('Account Number',cfg.bank_account_number,'bk_acc')}${accountRow('Account Title',cfg.bank_account_title,'bk_title')}${accountRow('IBAN',cfg.bank_iban,'bk_iban')}`; } return `<h3 class="wiz-heading">Payment Method</h3><p class="wiz-sub">Select your payment method, then transfer the exact amount.</p><div class="wiz-fraud-warning"><span class="icon">⚠️</span><span class="text"><strong>Important:</strong> Transfer the <strong>exact</strong> amount shown. Any fraudulent payment is a criminal offence.</span></div><div class="wiz-amount-badge"><span class="wiz-amount-label">Transfer exactly</span><span class="wiz-amount-value">PKR ${pricing.final.toLocaleString()}</span></div><div class="wiz-method-tabs">${METHODS.map(mt=>`<div class="wiz-method-tab ${m===mt.key?'active':''}" onclick="wizState.method='${mt.key}';renderWizard()" style="${m===mt.key?`border-color:${mt.accent};background:${mt.accent}0a`:''}"><div class="method-icon">${mt.icon}</div><div class="method-label" style="${m===mt.key?`color:${mt.accent}`:''}">${mt.label}</div></div>`).join('')}</div><div class="wiz-account-card">${acct}</div>`; }
+function renderStep2() { const pricing = calcPricing(wizState.planKey, wizState.period); const cfg = paymentConfig || {}; const m = wizState.method; let acct = ''; if (m==='jazzcash') { acct = `<div class="wiz-account-header"><span class="icon">📱</span><span class="title">JazzCash Instructions</span></div><div class="wiz-account-instr">Open JazzCash → Send Money → enter number → transfer PKR ${pricing.final.toLocaleString()}</div>${accountRow('Mobile Number',cfg.jazzcash_number,'jc_num')}${accountRow('Account Name',cfg.jazzcash_name,'jc_name')}`; } else if (m==='easypaysa') { acct = `<div class="wiz-account-header"><span class="icon">💚</span><span class="title">EasyPaisa Instructions</span></div><div class="wiz-account-instr">Open EasyPaisa → Send Money → enter number → transfer PKR ${pricing.final.toLocaleString()}</div>${accountRow('Mobile Number',cfg.easypaysa_number,'ep_num')}${accountRow('Account Name',cfg.easypaysa_name,'ep_name')}`; } else { acct = `<div class="wiz-account-header"><span class="icon">🏦</span><span class="title">Bank Transfer Instructions</span></div><div class="wiz-account-instr">Transfer PKR ${pricing.final.toLocaleString()} to the account below.</div>${accountRow('Bank',cfg.bank_name,'bk_name')}${accountRow('Account Number',cfg.bank_account_number,'bk_acc')}${accountRow('Account Title',cfg.bank_account_title,'bk_title')}${accountRow('IBAN',cfg.bank_iban,'bk_iban')}`; } return `<h3 class="wiz-heading">Payment Method</h3><p class="wiz-sub">Select your payment method, then transfer the exact amount.</p><div class="wiz-fraud-warning"><span class="icon">⚠️</span><span class="text"><strong>Important:</strong> Transfer the <strong>exact</strong> amount shown. Any fraudulent payment is a criminal offence.</span></div><div class="wiz-amount-badge"><span class="wiz-amount-label">Transfer exactly</span><span class="wiz-amount-value">PKR ${pricing.final.toLocaleString()}</span></div><div class="wiz-method-tabs">${METHODS.map(mt=>`<div class="wiz-method-tab ${m===mt.key?'active':''}" onclick="wizState.method='${mt.key}';renderWizard()" style="${m===mt.key?`border-color:${mt.accent};background:${mt.accent}12`:''}"><div class="method-icon">${mt.icon}</div><div class="method-label" style="${m===mt.key?`color:${mt.accent}`:''}">${mt.label}</div></div>`).join('')}</div><div class="wiz-account-card">${acct}</div>`; }
 
 function renderStep3() { const e = wizState.errors; if (wizState.screenshot) return `<h3 class="wiz-heading">Upload Payment Proof</h3><p class="wiz-sub">Your screenshot is ready.</p><div class="wiz-upload-zone has-file" style="cursor:default;"><img src="${wizState.screenshot}" class="wiz-preview-img" /><div style="margin-top:8px;"><button class="wiz-remove-btn" onclick="wizState.screenshot=null;wizState.screenshotFile=null;renderWizard()">✕ Remove</button></div></div>`; return `<h3 class="wiz-heading">Upload Payment Proof</h3><p class="wiz-sub">Take a clear screenshot of your payment confirmation.</p>${e.screenshot?`<div style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:0.85rem;color:#EF4444;">📸 ${e.screenshot}</div>`:''}<div class="wiz-upload-zone ${e.screenshot?'error':''}" onclick="document.getElementById('fileInput').click()"><div class="wiz-upload-icon">📸</div><div class="wiz-upload-title">No screenshot yet</div><div class="wiz-upload-sub">JPG · PNG · HEIC · max 10 MB</div><div><button class="wiz-upload-btn" type="button">🖼️ Choose File</button></div></div><input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleFileSelect(event)" />`; }
 
